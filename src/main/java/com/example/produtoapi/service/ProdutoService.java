@@ -3,7 +3,9 @@ package com.example.produtoapi.service;
 import com.example.produtoapi.model.Produto;
 import com.example.produtoapi.repository.ProdutoRepository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -26,7 +28,7 @@ public class ProdutoService {
     public Produto buscarPorId(Long id) {
         return repository.findById(id)
                             .orElseThrow(() -> 
-                                new RuntimeException("Produto não encontrado"));
+                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Produto atualizar(Long id, Produto dados) {
