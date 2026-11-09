@@ -1,11 +1,13 @@
 package com.example.produtoapi.service;
 
+import com.example.produtoapi.dto.ProdutoRequestDTO;
+import com.example.produtoapi.dto.ProdutoResponseDTO;
 import com.example.produtoapi.model.Produto;
 import com.example.produtoapi.repository.ProdutoRepository;
 
-import org.springframework.http.HttpStatus;
+// import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+// import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -17,33 +19,68 @@ public class ProdutoService {
         this.repository = repository;
     }
 
-    public Produto criar(Produto produto) {
-        return repository.save(produto);
+    public ProdutoResponseDTO criar(ProdutoRequestDTO dto) {
+        Produto produto = new Produto();
+
+        produto.setNome(dto.nome());
+        produto.setDescricao(dto.descricao());
+        produto.setPreco(dto.preco());
+        produto.setQuantidade(dto.quantidade());
+
+        Produto salvo = repository.save(produto);
+
+        return converterParaDTO(salvo);
     }
 
-    public List<Produto> listarTodos() {
-        return repository.findAll();
+    public List<ProdutoResponseDTO> listarTodos() {
+        
+        return repository.findAll()
+                    .stream()
+                    .map(this::converterParaDTO)
+                    .toList();
     }
 
-    public Produto buscarPorId(Long id) {
-        return repository.findById(id)
-                            .orElseThrow(() -> 
-                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+    public ProdutoResponseDTO buscarPorId(Long id) {
+        
+        Produto produto = repository.findById(id)
+                            .orElseThrow(() ->
+                                new RuntimeException("Produto não encontrado"));
+        
+        return converterParaDTO(produto);
     }
 
-    public Produto atualizar(Long id, Produto dados) {
-        Produto produto = buscarPorId(id);
+    public ProdutoResponseDTO atualizar(
+        Long id,
+        ProdutoRequestDTO dto
+    ) {
+        Produto produto = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        produto.setNome(dados.getNome());
-        produto.setDescricao(dados.getDescricao());
-        produto.setPreco(dados.getPreco());
-        produto.setQuantidade(dados.getQuantidade());
+        produto.setNome(dto.nome());
+        produto.setDescricao(dto.descricao());
+        produto.setPreco(dto.preco());
+        produto.setQuantidade(dto.quantidade());
 
-        return repository.save(produto);
+        Produto atualizado = repository.save(produto);
+
+        return converterParaDTO(atualizado);
     }
 
     public void excluir(Long id) {
-        Produto produto = buscarPorId(id);
-        repository.delete(produto);
+        
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Produto não encontrado");
+        }
+    }
+
+    private ProdutoResponseDTO converterParaDTO(Produto produto) {
+
+        return new ProdutoResponseDTO(
+                produto.getId(),
+                produto.getNome(),
+                produto.getDescricao(),
+                produto.getPreco(),
+                produto.getQuantidade()
+        );
     }
 }
