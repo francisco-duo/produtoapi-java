@@ -1,6 +1,7 @@
 package com.example.produtoapi.controller;
 
-import com.example.produtoapi.model.Produto;
+import com.example.produtoapi.dto.ProdutoRequestDTO;
+import com.example.produtoapi.dto.ProdutoResponseDTO;
 import com.example.produtoapi.service.ProdutoService;
 
 import jakarta.validation.Valid;
@@ -22,26 +23,26 @@ public class ProdutoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Produto criar(@Valid @RequestBody Produto produto) {
-        return service.criar(produto);
+    public ProdutoResponseDTO criar(@Valid @RequestBody ProdutoRequestDTO dto) {
+        return service.criar(dto);
     }
 
     @GetMapping
-    public List<Produto> listarTodos() {
+    public List<ProdutoResponseDTO> listarTodos() {
         return service.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public Produto buscarPorId(@PathVariable Long id) {
+    public ProdutoResponseDTO buscarPorId(@PathVariable Long id) {
         return service.buscarPorId(id);
     }
 
     @PutMapping("/{id}")
-    public Produto atualizar(
+    public ProdutoResponseDTO atualizar(
         @PathVariable Long id,
-        @Valid @RequestBody Produto produto
+        @Valid @RequestBody ProdutoRequestDTO dto
     ) {
-        return service.atualizar(id, produto);
+        return service.atualizar(id, dto);
     }
 
     @DeleteMapping("/{id}")
