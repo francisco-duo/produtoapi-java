@@ -2,6 +2,7 @@ package com.example.produtoapi.service;
 
 import com.example.produtoapi.dto.ProdutoRequestDTO;
 import com.example.produtoapi.dto.ProdutoResponseDTO;
+import com.example.produtoapi.exception.ProdutoNaoEncontradoException;
 import com.example.produtoapi.model.Produto;
 import com.example.produtoapi.repository.ProdutoRepository;
 
@@ -44,7 +45,7 @@ public class ProdutoService {
         
         Produto produto = repository.findById(id)
                             .orElseThrow(() ->
-                                new RuntimeException("Produto não encontrado"));
+                                new ProdutoNaoEncontradoException("Produto não encontrado"));
         
         return converterParaDTO(produto);
     }
@@ -54,7 +55,7 @@ public class ProdutoService {
         ProdutoRequestDTO dto
     ) {
         Produto produto = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            .orElseThrow(() -> new ProdutoNaoEncontradoException("Produto não encontrado"));
 
         produto.setNome(dto.nome());
         produto.setDescricao(dto.descricao());
@@ -69,7 +70,7 @@ public class ProdutoService {
     public void excluir(Long id) {
         
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Produto não encontrado");
+            throw new ProdutoNaoEncontradoException("Produto não encontrado");
         }
     }
 
