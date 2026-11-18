@@ -1,32 +1,45 @@
 package com.example.produtoapi.service;
 
+import com.example.produtoapi.dto.CategoriaResumoDTO;
 import com.example.produtoapi.dto.ProdutoRequestDTO;
 import com.example.produtoapi.dto.ProdutoResponseDTO;
+import com.example.produtoapi.exception.CategoriaNaoEncontradaException;
 import com.example.produtoapi.exception.ProdutoNaoEncontradoException;
+import com.example.produtoapi.model.Categoria;
 import com.example.produtoapi.model.Produto;
+import com.example.produtoapi.repository.CategoriaRepository;
 import com.example.produtoapi.repository.ProdutoRepository;
 
 // import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 // import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@Transactional
 public class ProdutoService {
     
     private final ProdutoRepository repository;
+    private final CategoriaRepository categoriaRepository;
 
-    public ProdutoService(ProdutoRepository repository) {
+    public ProdutoService(ProdutoRepository repository, CategoriaRepository categoriaRepository) {
         this.repository = repository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public ProdutoResponseDTO criar(ProdutoRequestDTO dto) {
+        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
+            .orElseThrow(() -> new CategoriaNaoEncontradaException("Categoria não encontrada."));
+
         Produto produto = new Produto();
 
         produto.setNome(dto.nome());
         produto.setDescricao(dto.descricao());
         produto.setPreco(dto.preco());
         produto.setQuantidade(dto.quantidade());
+        produto.setCategoria(categoria);
 
         Produto salvo = repository.save(produto);
 
@@ -57,10 +70,15 @@ public class ProdutoService {
         Produto produto = repository.findById(id)
             .orElseThrow(() -> new ProdutoNaoEncontradoException("Produto não encontrado"));
 
+        Categoria categoria = categoriaRepository.findById(dto.categoriaId())
+            .orElseThrow(() -> new CategoriaNaoEncontradaException("Categoria não encontrada"));
+        
+        
         produto.setNome(dto.nome());
         produto.setDescricao(dto.descricao());
         produto.setPreco(dto.preco());
         produto.setQuantidade(dto.quantidade());
+        produto.setCategoria(categoria);
 
         Produto atualizado = repository.save(produto);
 
@@ -76,12 +94,18 @@ public class ProdutoService {
 
     private ProdutoResponseDTO converterParaDTO(Produto produto) {
 
+        CategoriaResumoDTO categoriaDTO = new CategoriaResumoDTO(
+            produto.getCategoria().getId(),
+            produto.getCategoria().getNome()
+        );
+
         return new ProdutoResponseDTO(
                 produto.getId(),
                 produto.getNome(),
                 produto.getDescricao(),
                 produto.getPreco(),
-                produto.getQuantidade()
+                produto.getQuantidade(),
+                categoriaDTO
         );
     }
 }
