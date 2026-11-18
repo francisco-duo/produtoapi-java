@@ -25,9 +25,21 @@ public class Produto {
     @Min(0)
     private Integer quantidade;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
     public Produto() {}
 
     // Getters e Setters
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
     public Long getId() {
         return id;
     }
