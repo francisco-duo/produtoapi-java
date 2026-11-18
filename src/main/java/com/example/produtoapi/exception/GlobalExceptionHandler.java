@@ -84,4 +84,18 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(erro);
     }
+
+    @ExceptionHandler (CategoriaNaoEncontradaException.class)
+    public ResponseEntity<ErrorResponse> tratarCategoriaNaoEncontrada(CategoriaNaoEncontradaException ex) {
+        ErrorResponse erro = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            "Not Found",
+            ex.getMessage(),
+            LocalDateTime.now()
+        );
+
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(erro);
+    }
 }
