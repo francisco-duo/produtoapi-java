@@ -9,5 +9,5 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long>{
     O Spring Data JPA consegue interpretar esse nome e gerar uma consulta
     para verificar se já existe uma categoria com aquele nome.
     */
-    boolean exisexistsByNome(String nome);
+    boolean existsByNome(String nome);
 }

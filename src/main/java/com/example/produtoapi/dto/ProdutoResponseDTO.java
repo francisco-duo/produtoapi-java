@@ -8,5 +8,5 @@ public record ProdutoResponseDTO(
     String descricao,
     BigDecimal preco,
     Integer quantidade,
-    CategoriaResumoDTO categoria
+    CategoriaResponseDTO categoria
 ) {}

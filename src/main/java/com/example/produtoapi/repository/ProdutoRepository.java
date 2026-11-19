@@ -15,4 +15,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     deleteById()	    Exclui por ID
     existsById()	    Verifica existência
     */
+
+    // Verifica se algum produto pertence à categoria informada
+    boolean existsByCategoriaId(Long categoriaId);
 }

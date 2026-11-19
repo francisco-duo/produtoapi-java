@@ -1,6 +1,6 @@
 package com.example.produtoapi.dto;
 
-public record CategoriaResumoDTO(
+public record CategoriaResponseDTO(
     Long id,
     String nome
 ) {}

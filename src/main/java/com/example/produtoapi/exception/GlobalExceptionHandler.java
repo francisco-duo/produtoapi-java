@@ -98,4 +98,18 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.NOT_FOUND)
             .body(erro);
     }
+
+    @ExceptionHandler(ConflitoException.class)
+    public ResponseEntity<ErrorResponse> tratarConflito(ConflitoException ex) {
+        ErrorResponse erro = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            "Conflict",
+            ex.getMessage(),
+            LocalDateTime.now()
+        );
+
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(erro);
+    }
 }

@@ -1,6 +1,6 @@
 package com.example.produtoapi.service;
 
-import com.example.produtoapi.dto.CategoriaResumoDTO;
+import com.example.produtoapi.dto.CategoriaResponseDTO;
 import com.example.produtoapi.dto.ProdutoRequestDTO;
 import com.example.produtoapi.dto.ProdutoResponseDTO;
 import com.example.produtoapi.exception.CategoriaNaoEncontradaException;
@@ -90,14 +90,19 @@ public class ProdutoService {
         if (!repository.existsById(id)) {
             throw new ProdutoNaoEncontradoException("Produto não encontrado");
         }
+
+        repository.deleteById(id);
     }
 
     private ProdutoResponseDTO converterParaDTO(Produto produto) {
 
-        CategoriaResumoDTO categoriaDTO = new CategoriaResumoDTO(
-            produto.getCategoria().getId(),
-            produto.getCategoria().getNome()
-        );
+        // Produtos cadastrados antes da criação de categorias podem não ter uma
+        CategoriaResponseDTO categoriaDTO = produto.getCategoria() == null
+            ? null
+            : new CategoriaResponseDTO(
+                produto.getCategoria().getId(),
+                produto.getCategoria().getNome()
+            );
 
         return new ProdutoResponseDTO(
                 produto.getId(),
