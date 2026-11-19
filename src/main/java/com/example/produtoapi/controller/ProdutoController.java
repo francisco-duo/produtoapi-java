@@ -8,6 +8,9 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 import java.util.List;
 
@@ -30,6 +33,12 @@ public class ProdutoController {
     @GetMapping
     public List<ProdutoResponseDTO> listarTodos() {
         return service.listarTodos();
+    }
+
+    @GetMapping("/paginado")
+    public Page<ProdutoResponseDTO> listarPaginado(@PageableDefault (size = 10) Pageable pageable) {
+        // http://127.0.0.1:8080/api/produtos/paginado?page=1&size=2
+        return service.listarPaginado(pageable);
     }
 
     @GetMapping("/{id}")

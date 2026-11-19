@@ -13,6 +13,8 @@ import com.example.produtoapi.repository.ProdutoRepository;
 // import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 // import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
@@ -112,5 +114,19 @@ public class ProdutoService {
                 produto.getQuantidade(),
                 categoriaDTO
         );
+    }
+
+    public Page<ProdutoResponseDTO> listarPaginado(Pageable pageable) {
+        /*
+        repository,findAll(pageable): solicita ao banco apenas os registros da página desejada.
+
+        Page<Produto> é o retorno do método findAll(pageable), que contém os produtos da página solicitada.
+
+        .map(this::converterParaDTO): converte cada Produto em ProdutoResponseDTO, mantendo a estrutura de página.
+
+        O resultado final é um Page<ProdutoResponseDTO> que contém os produtos da página solicitada, já convertidos para o formato de resposta.
+        */
+        return repository.findAll(pageable)
+                .map(this::converterParaDTO);
     }
 }
