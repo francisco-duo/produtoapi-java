@@ -1,18 +1,28 @@
 package com.example.produtoapi.controller;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.produtoapi.dto.ProdutoRequestDTO;
 import com.example.produtoapi.dto.ProdutoResponseDTO;
 import com.example.produtoapi.service.ProdutoService;
 
 import jakarta.validation.Valid;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/produtos")
@@ -58,5 +68,34 @@ public class ProdutoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Long id) {
         service.excluir(id);
+    }
+
+    @GetMapping("/buscar")
+    public List<ProdutoResponseDTO> buscarPorNome(
+        @RequestParam String nome
+    ) {
+        return service.buscarPorNome(nome);
+    }
+
+    @GetMapping("/categoria/{categoriaId}")
+    public List<ProdutoResponseDTO> buscarPorCategoria(
+        @PathVariable Long categoriaId
+    ) {
+        return service.buscarPorCategoria(categoriaId);
+    }
+
+    @GetMapping("/preco")
+    public List<ProdutoResponseDTO> buscarPorFaixaDePreco(
+        @RequestParam BigDecimal minimo,
+        @RequestParam BigDecimal maximo
+    ) {
+        return service.buscarPorFaixaDePreco(minimo, maximo);
+    }
+
+    @GetMapping("/quantidade")
+    public List<ProdutoResponseDTO> buscarPorQuantidade(
+        @RequestParam Integer quantidade
+    ) {
+        return service.buscarPorQuantidade(quantidade);
     }
 }

@@ -1,5 +1,15 @@
 package com.example.produtoapi.service;
 
+import java.math.BigDecimal;
+// import org.springframework.web.server.ResponseStatusException;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+// import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.produtoapi.dto.CategoriaResponseDTO;
 import com.example.produtoapi.dto.ProdutoRequestDTO;
 import com.example.produtoapi.dto.ProdutoResponseDTO;
@@ -9,15 +19,6 @@ import com.example.produtoapi.model.Categoria;
 import com.example.produtoapi.model.Produto;
 import com.example.produtoapi.repository.CategoriaRepository;
 import com.example.produtoapi.repository.ProdutoRepository;
-
-// import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-// import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
 
 @Service
 @Transactional
@@ -128,5 +129,40 @@ public class ProdutoService {
         */
         return repository.findAll(pageable)
                 .map(this::converterParaDTO);
+    }
+
+    public List<ProdutoResponseDTO> buscarPorNome(String nome) {
+
+        return repository.findByNomeContainingIgnoreCase(nome)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
+    }
+
+    public List<ProdutoResponseDTO> buscarPorCategoria(Long categoriaId) {
+
+        return repository.findByCategoriaId(categoriaId)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
+    }
+
+    public List<ProdutoResponseDTO> buscarPorFaixaDePreco(
+        BigDecimal minimo,
+        BigDecimal maximo
+    ) {
+
+        return repository.findByPrecoBetween(minimo, maximo)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
+    }
+
+    public List<ProdutoResponseDTO> buscarPorQuantidade(Integer quantidade) {
+
+        return repository.findByQuantidadeGreaterThan(quantidade)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
     }
 }

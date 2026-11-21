@@ -1,6 +1,10 @@
 package com.example.produtoapi.repository;
 
 import com.example.produtoapi.model.Produto;
+
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
@@ -18,4 +22,12 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     // Verifica se algum produto pertence à categoria informada
     boolean existsByCategoriaId(Long categoriaId);
+
+    List<Produto> findByNomeContainingIgnoreCase(String nome);
+
+    List<Produto> findByCategoriaId(Long categoriaId);
+
+    List<Produto> findByPrecoBetween(BigDecimal minimo, BigDecimal maximo);
+
+    List<Produto> findByQuantidadeGreaterThan(Integer quantidade);
 }
