@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.produtoapi.dto.CategoriaResponseDTO;
 import com.example.produtoapi.dto.ProdutoRequestDTO;
 import com.example.produtoapi.dto.ProdutoResponseDTO;
+import com.example.produtoapi.dto.ValorEstoqueCategoriaDTO;
+import com.example.produtoapi.dto.ValorEstoqueDTO;
 import com.example.produtoapi.exception.CategoriaNaoEncontradaException;
 import com.example.produtoapi.exception.ProdutoNaoEncontradoException;
 import com.example.produtoapi.model.Categoria;
@@ -163,6 +165,69 @@ public class ProdutoService {
         return repository.findByQuantidadeGreaterThan(quantidade)
             .stream()
             .map(this::converterParaDTO)
+            .toList();
+    }
+
+    // ===== Consultas com @Query (JPQL) =====
+
+    public List<ProdutoResponseDTO> buscarProdutosMaisCarosQue(BigDecimal preco) {
+
+        return repository.buscarProdutosMaisCarosQue(preco)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
+    }
+
+    public List<ProdutoResponseDTO> buscarPorCategoriaComQuery(Long categoriaId) {
+
+        return repository.buscarPorCategoriaComQuery(categoriaId)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
+    }
+
+    public ValorEstoqueDTO calcularValorTotalEstoque() {
+
+        // SUM retorna null quando não há produtos cadastrados
+        BigDecimal total = repository.calcularValorTotalEstoque();
+
+        return new ValorEstoqueDTO(total == null ? BigDecimal.ZERO : total);
+    }
+
+    // ===== Consultas nativas (SQL) =====
+
+    public List<ProdutoResponseDTO> buscarProdutosComEstoqueBaixo(Integer quantidade) {
+
+        return repository.buscarProdutosComEstoqueBaixo(quantidade)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
+    }
+
+    public List<ProdutoResponseDTO> buscarProdutosPorNomeCategoria(String nome) {
+
+        return repository.buscarProdutosPorNomeCategoria(nome)
+            .stream()
+            .map(this::converterParaDTO)
+            .toList();
+    }
+
+    public List<ValorEstoqueCategoriaDTO> calcularValorEstoquePorCategoria() {
+
+        /*
+        Consultas nativas com várias colunas retornam List<Object[]>.
+        Cada Object[] é uma linha: [0] = nome da categoria, [1] = soma.
+        O tipo numérico pode variar conforme o driver, por isso
+        convertemos a partir de Number.
+        */
+        return repository.calcularValorEstoquePorCategoria()
+            .stream()
+            .map(linha -> new ValorEstoqueCategoriaDTO(
+                (String) linha[0],
+                linha[1] == null
+                    ? BigDecimal.ZERO
+                    : new BigDecimal(linha[1].toString())
+            ))
             .toList();
     }
 }

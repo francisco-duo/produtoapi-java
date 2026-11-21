@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.produtoapi.dto.ProdutoRequestDTO;
 import com.example.produtoapi.dto.ProdutoResponseDTO;
+import com.example.produtoapi.dto.ValorEstoqueCategoriaDTO;
+import com.example.produtoapi.dto.ValorEstoqueDTO;
 import com.example.produtoapi.service.ProdutoService;
 
 import jakarta.validation.Valid;
@@ -97,5 +99,53 @@ public class ProdutoController {
         @RequestParam Integer quantidade
     ) {
         return service.buscarPorQuantidade(quantidade);
+    }
+
+    // ===== Consultas com @Query (JPQL) =====
+
+    @GetMapping("/mais-caros")
+    public List<ProdutoResponseDTO> buscarProdutosMaisCarosQue(
+        @RequestParam BigDecimal preco
+    ) {
+        // http://127.0.0.1:8080/api/produtos/mais-caros?preco=100
+        return service.buscarProdutosMaisCarosQue(preco);
+    }
+
+    @GetMapping("/categoria/{categoriaId}/query")
+    public List<ProdutoResponseDTO> buscarPorCategoriaComQuery(
+        @PathVariable Long categoriaId
+    ) {
+        // http://127.0.0.1:8080/api/produtos/categoria/1/query
+        return service.buscarPorCategoriaComQuery(categoriaId);
+    }
+
+    @GetMapping("/estoque/valor-total")
+    public ValorEstoqueDTO calcularValorTotalEstoque() {
+        // http://127.0.0.1:8080/api/produtos/estoque/valor-total
+        return service.calcularValorTotalEstoque();
+    }
+
+    // ===== Consultas nativas (SQL) =====
+
+    @GetMapping("/estoque/baixo")
+    public List<ProdutoResponseDTO> buscarProdutosComEstoqueBaixo(
+        @RequestParam Integer quantidade
+    ) {
+        // http://127.0.0.1:8080/api/produtos/estoque/baixo?quantidade=5
+        return service.buscarProdutosComEstoqueBaixo(quantidade);
+    }
+
+    @GetMapping("/categoria/nome")
+    public List<ProdutoResponseDTO> buscarProdutosPorNomeCategoria(
+        @RequestParam String nome
+    ) {
+        // http://127.0.0.1:8080/api/produtos/categoria/nome?nome=Informatica
+        return service.buscarProdutosPorNomeCategoria(nome);
+    }
+
+    @GetMapping("/estoque/valor-por-categoria")
+    public List<ValorEstoqueCategoriaDTO> calcularValorEstoquePorCategoria() {
+        // http://127.0.0.1:8080/api/produtos/estoque/valor-por-categoria
+        return service.calcularValorEstoquePorCategoria();
     }
 }
